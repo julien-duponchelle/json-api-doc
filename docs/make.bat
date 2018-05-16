@@ -9,7 +9,7 @@ if "%SPHINXBUILD%" == "" (
 )
 set SOURCEDIR=.
 set BUILDDIR=_build
-set SPHINXPROJ=json_api_doc
+set SPHINXPROJ=json-api-doc
 
 if "%1" == "" goto help
 

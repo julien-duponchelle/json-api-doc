@@ -4,7 +4,7 @@
 # You can set these variables from the command line.
 SPHINXOPTS    =
 SPHINXBUILD   = python -msphinx
-SPHINXPROJ    = json_api_doc
+SPHINXPROJ    = json-api-doc
 SOURCEDIR     = .
 BUILDDIR      = _build
 

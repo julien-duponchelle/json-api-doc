@@ -12,7 +12,7 @@ To install JSON API doc, run this command in your terminal:
 
 .. code-block:: console
 
-    $ pip install json_api_doc
+    $ pip install json-api-doc
 
 This is the preferred method to install JSON API doc, as it will always install the most recent stable release.
 
