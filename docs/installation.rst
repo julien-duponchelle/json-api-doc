@@ -32,13 +32,13 @@ You can either clone the public repository:
 
 .. code-block:: console
 
-    $ git clone git://github.com/noplay/json_api_doc
+    $ git clone git://github.com/noplay/json-api-doc
 
 Or download the `tarball`_:
 
 .. code-block:: console
 
-    $ curl  -OL https://github.com/noplay/json_api_doc/tarball/master
+    $ curl  -OL https://github.com/noplay/json-api-doc/tarball/master
 
 Once you have a copy of the source, you can install it with:
 
@@ -47,5 +47,5 @@ Once you have a copy of the source, you can install it with:
     $ python setup.py install
 
 
-.. _Github repo: https://github.com/noplay/json_api_doc
-.. _tarball: https://github.com/noplay/json_api_doc/tarball/master
+.. _Github repo: https://github.com/noplay/json-api-doc
+.. _tarball: https://github.com/noplay/json-api-doc/tarball/master
