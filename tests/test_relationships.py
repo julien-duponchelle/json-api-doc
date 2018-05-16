@@ -76,6 +76,20 @@ def test_resolve():
     }
 
 
+def test_resolve_missing():
+    included = {
+    }
+    data = {
+        "title": "Article 1",
+        "author": ("people", "9")
+    }
+    doc = json_api_doc._resolve(data, included)
+    assert doc == {
+        "title": "Article 1",
+        "author": {"type": "people", "id": "9"}
+    }
+
+
 def test_resolve_list():
     included = {
         ("people", "9"): {

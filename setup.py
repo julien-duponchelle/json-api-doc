@@ -40,5 +40,5 @@ setup(
     tests_require=test_requirements,
     url='https://github.com/noplay/json-api-doc',
     version='0.1.0',
-    zip_safe=False,
+    console_scripts=['jsonapidoc = json_api_doc.__main__:main'],
 )

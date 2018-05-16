@@ -27,12 +27,20 @@ def parse(content):
 def _resolve(data, included):
     for key, value in data.items():
         if isinstance(value, tuple):
-            data[key] = _resolve(included[value], included)
+            resolved = included.get(value, {
+                "type": value[0],
+                "id": value[1]
+            })
+            data[key] = _resolve(resolved, included)
         elif isinstance(value, list):
             l = []
             for item in value:
                 if isinstance(item, tuple):
-                    l.append(_resolve(included[item], included))
+                    resolved = included.get(item, {
+                        "type": value[0],
+                        "id": value[1]
+                    })
+                    l.append(_resolve(resolved, included))
                 else:
                     l.append(item)
             data[key] = l
