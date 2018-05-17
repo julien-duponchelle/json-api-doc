@@ -85,7 +85,7 @@ def test_resolve():
         "title": "Article 1",
         "author": ("people", "9")
     }
-    doc = json_api_doc._resolve(data, included)
+    doc = json_api_doc._resolve(data, included, set())
     assert doc == {
         "title": "Article 1",
         "author": {"name": "Jean"}
@@ -99,7 +99,7 @@ def test_resolve_missing():
         "title": "Article 1",
         "author": ("people", "9")
     }
-    doc = json_api_doc._resolve(data, included)
+    doc = json_api_doc._resolve(data, included, set())
     assert doc == {
         "title": "Article 1",
         "author": {"type": "people", "id": "9"}
@@ -122,7 +122,7 @@ def test_resolve_list():
             ("people", "10"),
         ]
     }
-    doc = json_api_doc._resolve(data, included)
+    doc = json_api_doc._resolve(data, included, set())
     assert doc == {
         "title": "Article 1",
         "authors": [
@@ -142,7 +142,7 @@ def test_resolve_list_missing_items():
             ("people", "10"),
         ]
     }
-    doc = json_api_doc._resolve(data, included)
+    doc = json_api_doc._resolve(data, included, set())
     assert doc == {
         "title": "Article 1",
         "authors": [
@@ -170,7 +170,7 @@ def test_resolve_nested():
         "title": "Article 1",
         "author": ("people", "9")
     }
-    doc = json_api_doc._resolve(data, included)
+    doc = json_api_doc._resolve(data, included, set())
     assert doc == {
         "title": "Article 1",
         "author": {
@@ -178,6 +178,34 @@ def test_resolve_nested():
             "address": {
                 "street": "boulevard magenta",
                 "city": {"name": "Paris"}
+            }
+        }
+    }
+
+
+def test_resolve_loop():
+    included = {
+        ("people", "1"): {
+            "name": "Jean",
+            "father": ("people", "2"),
+        },
+        ("people", "2"): {
+            "name": "Luc",
+            "son": ("people", "1"),
+        },
+    }
+    data = {
+        "title": "Article 1",
+        "author": ("people", "1")
+    }
+    doc = json_api_doc._resolve(data, included, set())
+    assert doc == {
+        "title": "Article 1",
+        "author": {
+            "name": "Jean",
+            "father": {
+                "name": "Luc",
+                "son": {"type": "people", "id": "1"}
             }
         }
     }

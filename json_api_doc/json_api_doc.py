@@ -14,33 +14,50 @@ def parse(content):
     else:
         included = []
     if isinstance(content["data"], dict):
-        return _resolve(_flat(content["data"]), included)
+        return _resolve(_flat(content["data"]), included, set())
     elif isinstance(content["data"], list):
         result = []
         for obj in content["data"]:
-            result.append(_resolve(_flat(obj), included))
+            result.append(_resolve(_flat(obj), included, set()))
         return result
     else:
         return None
 
 
-def _resolve(data, included):
+def _resolve(data, included, resolved):
     for key, value in data.items():
         if isinstance(value, tuple):
-            resolved = included.get(value, {
+            id = {
                 "type": value[0],
                 "id": value[1]
-            })
-            data[key] = _resolve(resolved, included)
+            }
+            resolved_item = included.get(value, id)
+
+            if value in resolved:
+                data[key] = id
+            else:
+                data[key] = _resolve(
+                    resolved_item,
+                    included,
+                    resolved | set((value, ))
+                )
         elif isinstance(value, list):
             l = []
             for item in value:
                 if isinstance(item, tuple):
-                    resolved = included.get(item, {
+                    id = {
                         "type": item[0],
                         "id": item[1]
-                    })
-                    l.append(_resolve(resolved, included))
+                    }
+                    resolved_item = included.get(item, id)
+                    if item in resolved:
+                        data[key] = id
+                    else:
+                        l.append(
+                            _resolve(
+                                resolved_item,
+                                included, resolved | set((item, )))
+                            )
                 else:
                     l.append(item)
             data[key] = l
