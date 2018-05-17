@@ -39,6 +39,22 @@ def test_flat_list():
     ]
 
 
+def test_flat_none():
+    data = {
+        "type": "article",
+        "id": "1",
+        "attributes": {
+            "title": "Article 1"
+        },
+        "relationships": {
+            "authors": {
+                "data": None
+            }
+        }
+    }
+    assert json_api_doc._flat(data)["authors"] is None
+
+
 def test_parse_included():
     data = [{
         "type": "people",
@@ -114,6 +130,27 @@ def test_resolve_list():
             {"name": "Luc"},
         ]
     }
+
+
+def test_resolve_list_missing_items():
+    included = {
+    }
+    data = {
+        "title": "Article 1",
+        "authors": [
+            ("people", "9"),
+            ("people", "10"),
+        ]
+    }
+    doc = json_api_doc._resolve(data, included)
+    assert doc == {
+        "title": "Article 1",
+        "authors": [
+            {"id": "9", "type": "people"},
+            {"id": "10", "type": "people"}
+        ]
+    }
+
 
 def test_resolve_nested():
     included = {

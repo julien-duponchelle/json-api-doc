@@ -37,8 +37,8 @@ def _resolve(data, included):
             for item in value:
                 if isinstance(item, tuple):
                     resolved = included.get(item, {
-                        "type": value[0],
-                        "id": value[1]
+                        "type": item[0],
+                        "id": item[1]
                     })
                     l.append(_resolve(resolved, included))
                 else:
@@ -63,6 +63,8 @@ def _flat(obj):
                 obj[relationship] = [
                     (i["type"], i["id"]) for i in item["data"]
                 ]
+            elif item["data"] is None:
+                obj[relationship] = None
             else:
                 obj[relationship] = (item["data"]["type"], item["data"]["id"])
     return obj
