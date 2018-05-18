@@ -1,4 +1,4 @@
-from json_api_doc import json_api_doc
+import json_api_doc
 
 
 def test_flat():

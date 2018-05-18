@@ -6,7 +6,7 @@
 import pytest
 
 
-from json_api_doc import json_api_doc
+import json_api_doc
 
 
 def test_simple_null_object():

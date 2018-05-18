@@ -1,12 +1,12 @@
 import sys
 import json
-from json_api_doc import json_api_doc
+from . import parse
 
 
 def main():
     content = sys.stdin.read()
     content = json.loads(content)
-    doc = json_api_doc.parse(content)
+    doc = parse(content)
     print(json.dumps(doc, indent=4))
 
 

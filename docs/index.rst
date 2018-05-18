@@ -1,5 +1,5 @@
-Welcome to JSON API doc's documentation!
-======================================
+JSON API Doc's documentation
+==============================
 
 .. toctree::
    :maxdepth: 2
@@ -8,12 +8,9 @@ Welcome to JSON API doc's documentation!
    readme
    installation
    usage
-   modules
    contributing
-   history
 
 Indices and tables
 ==================
 * :ref:`genindex`
-* :ref:`modindex`
 * :ref:`search`

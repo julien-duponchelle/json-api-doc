@@ -1,5 +1,5 @@
 ============
-JSON API doc
+JSON API Doc
 ============
 
 
@@ -20,14 +20,97 @@ JSON API doc
 
 
 
-JSON API to document parser
+JSON API to document parser. Available as a command line
+utility and Python 3 module.
 
+This parser will transform JSON API (http://jsonapi.org/) documents
+to object easier to manipulate.
 
-* Free software: Apache Software License 2.0
-* Documentation: https://json-api-doc.readthedocs.io.
+For this JSON API document:
 
+.. code-block:: json
 
-Features
+    {
+      "data": [{
+        "type": "articles",
+        "id": "1",
+        "attributes": {
+          "title": "JSON API paints my bikeshed!",
+          "body": "The shortest article. Ever.",
+          "created": "2015-05-22T14:56:29.000Z",
+          "updated": "2015-05-22T14:56:28.000Z"
+        },
+        "relationships": {
+          "author": {
+            "data": {"id": "42", "type": "people"}
+          }
+        }
+      }],
+      "included": [
+        {
+          "type": "people",
+          "id": "42",
+          "attributes": {
+            "name": "John",
+            "age": 80,
+            "gender": "male"
+          }
+        }
+      ]
+    }
+
+The simplified version will be:
+
+.. code-block:: json
+
+    [
+        {
+            "type": "articles",
+            "id": "1",
+            "title": "JSON API paints my bikeshed!",
+            "body": "The shortest article. Ever.",
+            "created": "2015-05-22T14:56:29.000Z",
+            "updated": "2015-05-22T14:56:28.000Z",
+            "author": {
+                "type": "people",
+                "id": "42",
+                "name": "John",
+                "age": 80,
+                "gender": "male"
+            }
+        }
+    ]
+
+Usage as python module
+----------------------
+
+.. code-block:: python
+
+        import json_api_doc
+
+        document =  {
+            'data': {
+                'type': 'article,
+                'id': '1',
+                'attributes': {
+                    'name': 'Article 1'
+                }
+            }
+        }
+        json_api_doc.parse(document)
+
+Usage as cli
+------------
+
+.. code-block:: bash
+
+    $ jsonapidoc document.json
+
+Licence
 --------
+Free software: Apache Software License 2.0
 
-* TODO
+Documentation
+--------------
+Full Documentation is available: https://json-api-doc.readthedocs.io.
+
