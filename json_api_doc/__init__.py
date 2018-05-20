@@ -16,7 +16,7 @@ def parse(content):
     if "included" in content:
         included = _parse_included(content["included"])
     else:
-        included = []
+        included = {}
     if isinstance(content["data"], dict):
         return _resolve(_flat(content["data"]), included, set())
     elif isinstance(content["data"], list):
