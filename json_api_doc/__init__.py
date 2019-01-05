@@ -80,12 +80,13 @@ def _flat(obj):
     obj.update(obj.pop("attributes", {}))
     if "relationships" in obj:
         for relationship, item in obj.pop("relationships").items():
-            if isinstance(item["data"], list):
+            data = item.get("data")
+            if isinstance(data, list):
                 obj[relationship] = [
-                    (i["type"], i["id"]) for i in item["data"]
+                    (i["type"], i["id"]) for i in data
                 ]
-            elif item["data"] is None:
+            elif data is None:
                 obj[relationship] = None
             else:
-                obj[relationship] = (item["data"]["type"], item["data"]["id"])
+                obj[relationship] = (data["type"], data["id"])
     return obj
