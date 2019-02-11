@@ -90,7 +90,7 @@ Usage as python module
 
         document =  {
             'data': {
-                'type': 'article,
+                'type': 'article',
                 'id': '1',
                 'attributes': {
                     'name': 'Article 1'
