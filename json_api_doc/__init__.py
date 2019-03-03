@@ -27,6 +27,114 @@ def parse(content):
     else:
         return None
 
+def encode(content):
+    """
+    :param content: Dict with data to be encoded
+    :returns: JSONAPI encoded object
+    """
+    included = {}
+    if isinstance(content, list):
+        data = list(map(lambda l: _expand(l, included), content))
+    else:
+        data = _expand(content, included)
+
+    res = {
+        "data": data
+    }
+
+    if included:
+        res["included"] = list(included.values())
+
+    return res
+
+def _expand(data, included):
+    obj_type = data.get("$type", None)
+    if obj_type == None:
+        raise AttributeError("Missing object $type")
+
+    attrs = {} 
+    rels = {}
+    for k, v in data.items():
+        if k in ["$type", "id"]:
+            continue
+
+        if isinstance(v, dict):
+            rel = _expand_included(v, included)
+            rels[k] = {
+                "data": rel
+            }
+        elif isinstance(v, list):
+            rel = list(map(lambda l: _expand_included(l, included), v))
+            rels[k] = {
+                "data": rel
+            }
+        else:
+            attrs[k] = v
+
+    encoded = {
+        "type": obj_type,
+    }
+    
+    obj_id = data.get("id", None)
+    
+    if obj_id != None:
+        encoded["id"] = obj_id 
+
+    if len(attrs):
+        encoded["attributes"] = attrs
+
+    if len(rels):
+        encoded["relationships"] = rels
+
+    return encoded
+
+def _expand_included(data, included):
+    obj_type = data.get("$type", None)
+    if obj_type == None:
+        raise AttributeError("Missing object $type")
+
+    obj_id = data.get("id", None)
+    if obj_id == None:
+        raise AttributeError("Missing object id")
+
+    attrs = {} 
+    rels = {}
+    if (obj_type, obj_id) not in included:
+        for k, v in data.items():
+            if k in ["$type", "id"]:
+                continue
+            
+            if isinstance(v, dict):
+                rel = _expand_included(v, included)
+                rels[k] = {
+                    "data": rel
+                }
+            elif isinstance(v, list):
+                rel = list(map(lambda l: _expand_included(l, included), v))
+                rels[k] = {
+                    "data": rel
+                }
+            else:
+                attrs[k] = v
+
+        encoded = {
+            "type": obj_type,
+            "id": obj_id 
+        }
+
+        if len(attrs):
+            encoded["attributes"] = attrs
+
+        if len(rels):
+            encoded["relationships"] = rels
+
+        included[(obj_type, obj_id)] = encoded
+    
+    return {
+        "type": obj_type,
+        "id": obj_id
+    }
+    
 
 def _resolve(data, included, resolved):
     for key, value in data.items():
@@ -90,3 +198,21 @@ def _flat(obj):
             else:
                 obj[relationship] = (data["type"], data["id"])
     return obj
+
+if __name__ == "__main__":
+    data = {
+        "$type": "article",
+        "id": "1",
+        "title": "Article 1",
+        "comments": [{
+            "$type": "comment",
+            "id": "100",
+            "content": "First"
+        },{
+            "$type": "comment",
+            "id": "101",
+            "content": "Second"
+        }]
+    }
+    res = encode(data)
+    print(res)
