@@ -10,6 +10,9 @@ def parse(content):
     :param content: A JSON API document already
     :returns: The JSON API document parsed
     """
+    if "errors" in content:
+        return content
+
     if "data" not in content:
         raise AttributeError("This is not a JSON API document")
 
