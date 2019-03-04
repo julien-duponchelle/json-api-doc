@@ -37,106 +37,18 @@ def encode(content):
     """
     included = {}
     if isinstance(content, list):
-        data = list(map(lambda l: _expand(l, included), content))
+        res = {
+            "data": list(map(lambda item: _encode(item, included), content))
+        }
     else:
-        data = _expand(content, included)
-
-    res = {
-        "data": data
-    }
+        res = {
+            "data": _encode(content, included)
+        }
 
     if included:
         res["included"] = list(included.values())
-
+    
     return res
-
-def _expand(data, included):
-    obj_type = data.get("$type", None)
-    if obj_type == None:
-        raise AttributeError("Missing object $type")
-
-    attrs = {} 
-    rels = {}
-    for k, v in data.items():
-        if k in ["$type", "id"]:
-            continue
-
-        if isinstance(v, dict):
-            rel = _expand_included(v, included)
-            rels[k] = {
-                "data": rel
-            }
-        elif isinstance(v, list):
-            rel = list(map(lambda l: _expand_included(l, included), v))
-            rels[k] = {
-                "data": rel
-            }
-        else:
-            attrs[k] = v
-
-    encoded = {
-        "type": obj_type,
-    }
-    
-    obj_id = data.get("id", None)
-    
-    if obj_id != None:
-        encoded["id"] = obj_id 
-
-    if len(attrs):
-        encoded["attributes"] = attrs
-
-    if len(rels):
-        encoded["relationships"] = rels
-
-    return encoded
-
-def _expand_included(data, included):
-    obj_type = data.get("$type", None)
-    if obj_type == None:
-        raise AttributeError("Missing object $type")
-
-    obj_id = data.get("id", None)
-    if obj_id == None:
-        raise AttributeError("Missing object id")
-
-    attrs = {} 
-    rels = {}
-    if (obj_type, obj_id) not in included:
-        for k, v in data.items():
-            if k in ["$type", "id"]:
-                continue
-            
-            if isinstance(v, dict):
-                rel = _expand_included(v, included)
-                rels[k] = {
-                    "data": rel
-                }
-            elif isinstance(v, list):
-                rel = list(map(lambda l: _expand_included(l, included), v))
-                rels[k] = {
-                    "data": rel
-                }
-            else:
-                attrs[k] = v
-
-        encoded = {
-            "type": obj_type,
-            "id": obj_id 
-        }
-
-        if len(attrs):
-            encoded["attributes"] = attrs
-
-        if len(rels):
-            encoded["relationships"] = rels
-
-        included[(obj_type, obj_id)] = encoded
-    
-    return {
-        "type": obj_type,
-        "id": obj_id
-    }
     
 
 def _resolve(data, included, resolved):
@@ -202,20 +114,67 @@ def _flat(obj):
                 obj[relationship] = (data["type"], data["id"])
     return obj
 
-if __name__ == "__main__":
-    data = {
-        "$type": "article",
-        "id": "1",
-        "title": "Article 1",
-        "comments": [{
-            "$type": "comment",
-            "id": "100",
-            "content": "First"
-        },{
-            "$type": "comment",
-            "id": "101",
-            "content": "Second"
-        }]
+def _encode(data, included):
+    obj_type = data.get("$type", None)
+    if obj_type == None:
+        raise AttributeError("Missing object $type")
+
+    res = _expand(data, included)
+
+    res["type"] = obj_type
+    obj_id = data.get("id", None)
+    if obj_id != None:
+        res["id"] = obj_id
+    
+    return res
+
+
+def _expand(data, included):
+    res = {}
+    attrs = {} 
+    rels = {}
+    for k, v in data.items():
+        if k in ["$type", "id"]:
+            continue
+
+        if isinstance(v, dict):
+            rel = _expand_included(v, included)
+            rels[k] = {
+                "data": rel
+            }
+        elif isinstance(v, list):
+            rel = list(map(lambda l: _expand_included(l, included), v))
+            rels[k] = {
+                "data": rel
+            }
+        else:
+            attrs[k] = v
+
+    if len(attrs):
+        res["attributes"] = attrs
+
+    if len(rels):
+        res["relationships"] = rels
+
+    return res
+
+
+def _expand_included(data, included):
+    obj_type = data.get("$type", None)
+    if obj_type == None:
+        raise AttributeError("Missing object $type")
+
+    obj_id = data.get("id", None)
+    if obj_id == None:
+        raise AttributeError("Missing object id")
+
+    if (obj_type, obj_id) not in included:
+        encoded = _expand(data, included)
+        encoded["type"] = obj_type
+        encoded["id"] = obj_id
+        included[(obj_type, obj_id)] = encoded
+    
+    return {
+        "type": obj_type,
+        "id": obj_id
     }
-    res = encode(data)
-    print(res)
