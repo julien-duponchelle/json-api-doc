@@ -71,7 +71,7 @@ def test_encode_object_without_attributes():
 
 def test_invalid():
     with pytest.raises(AttributeError):
-        json_api_doc.parse({"a": 1})
+        json_api_doc.encode({"a": 1})
 
 
 def test_encode_object_embedded():
@@ -155,3 +155,65 @@ def test_encode_object_embedded_list():
             }
         }]
     }
+
+
+def test_encode_object_embedded_list():
+    data = {
+        "$type": "article",
+        "id": "1",
+        "title": "Article 1",
+        "author": {
+            "$type": "people",
+            "id": "100"
+        },
+        "inner": {
+            "value": "embedded regular JSON"
+        },
+        "innerArray": [
+            "embedded", "regular", "JSON", "array"
+        ],
+        "innerObjectArray": [
+            {
+                "value": "something"
+            },{
+                "value": "something_else"
+            }
+        ]
+    }
+    doc = json_api_doc.encode(data)
+    assert doc == {
+        "data": {
+            "type": "article",
+            "id": "1",
+            "attributes": {
+                "title": "Article 1",
+                "inner": {
+                    "value": "embedded regular JSON"
+                },
+                "innerArray": [
+                    "embedded", "regular", "JSON", "array"
+                ],
+                "innerObjectArray": [
+                    {
+                        "value": "something"
+                    },{
+                        "value": "something_else"
+                    }
+                ]
+            },
+            "relationships": {
+                "author": {
+                    "data": { 
+                        "type": "people",
+                        "id": "100" 
+                    }
+                }
+            }
+        },
+        "included": [{
+            "type": "people",
+            "id": "100"
+        }]
+    }
+
+

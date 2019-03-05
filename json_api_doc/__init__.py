@@ -111,6 +111,7 @@ def _flat(obj):
                 obj[relationship] = (data["type"], data["id"])
     return obj
 
+
 def _encode(data, included):
     obj_type = data.get("$type", None)
     if obj_type == None:
@@ -135,15 +136,21 @@ def _expand(data, included):
             continue
 
         if isinstance(v, dict):
-            rel = _expand_included(v, included)
+            embedded, is_res = _expand_included(v, included)
+            if is_res:
             rels[k] = {
-                "data": rel
+                    "data": embedded
             }
+            else:
+                attrs[k] = embedded
         elif isinstance(v, list):
-            rel = list(map(lambda l: _expand_included(l, included), v))
+            embedded = list(map(lambda l: _expand_included(l, included), v))
+            if all(map(lambda i: i[1], embedded)):
             rels[k] = {
-                "data": rel
+                    "data": list(map(lambda i: i[0], embedded))
             }
+        else:
+                attrs[k] = list(map(lambda i: i[0], embedded))
         else:
             attrs[k] = v
 
@@ -157,19 +164,24 @@ def _expand(data, included):
 
 
 def _expand_included(data, included):
-    obj_type = data.get("$type", None)
-    if obj_type == None:
-        raise AttributeError("Missing object $type")
+    if not isinstance(data, dict):
+        return data, False
 
-    obj_id = data.get("id", None)
-    if obj_id == None:
-        raise AttributeError("Missing object id")
+    typ = data.get("$type", None)
+    id = data.get("id", None)
 
-    if (obj_type, obj_id) not in included:
+    if typ == None or id == None:
+        # not a sub-resource, return as is
+        return data, False
+
+    if typ != None and id != None and (typ, id) not in included:
         encoded = _expand(data, included)
-        encoded["type"] = obj_type
-        encoded["id"] = obj_id
-        included[(obj_type, obj_id)] = encoded
+        encoded["type"] = typ
+        encoded["id"] = id
+        included[(typ, id)] = encoded
+    
+    return { "type": typ, "id": id }, True
+
     
     return {
         "type": obj_type,
