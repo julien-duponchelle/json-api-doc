@@ -157,7 +157,7 @@ def test_encode_object_embedded_list():
     }
 
 
-def test_encode_object_embedded_list():
+def test_encode_object_embedded_json():
     data = {
         "$type": "article",
         "id": "1",
@@ -217,3 +217,28 @@ def test_encode_object_embedded_list():
     }
 
 
+def test_encode_object_embedded_list():
+    meta = {
+        "some": "random",
+        "silly": "data"
+    }
+    doc = json_api_doc.encode(meta=meta)
+    assert doc == {
+        "meta": {
+            "some": "random",
+            "silly": "data"
+        }
+    }
+
+
+def test_error_and_data():
+    with pytest.raises(AttributeError):
+        doc = {
+            "data": {
+                "$type": "article"
+            },
+            "errors": {
+                "status": 200
+            }
+        }
+        json_api_doc.encode(**doc)

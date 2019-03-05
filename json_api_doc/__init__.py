@@ -27,25 +27,34 @@ def parse(content):
     else:
         return None
 
-def encode(content):
+def encode(data={}, errors={}, meta={}):
     """
-    :param content: Dict with data to be encoded
+    :param data: Dict with data to be encoded
     :returns: JSONAPI encoded object
     """
+
+    if data and errors:
+        raise AttributeError("""Only 'data' or 'errors' can be present in a 
+                                valid JSON API document""")
+
     included = {}
-    if isinstance(content, list):
-        res = {
-            "data": list(map(lambda item: _encode(item, included), content))
-        }
-    else:
-        res = {
-            "data": _encode(content, included)
-        }
+    res = {}
+    if data:
+        if isinstance(data, list):
+            res["data"] = list(map(lambda item: _encode(item, included), data))
+        else:
+            res["data"] = _encode(data, included)
 
     if included:
         res["included"] = list(included.values())
+
+    if meta:
+        res["meta"] = meta
     
-    return res
+    if errors:
+        res["errors"] = meta
+    
+    return res or { "data": None }
     
 
 def _resolve(data, included, resolved):
@@ -138,18 +147,18 @@ def _expand(data, included):
         if isinstance(v, dict):
             embedded, is_res = _expand_included(v, included)
             if is_res:
-            rels[k] = {
+                rels[k] = {
                     "data": embedded
-            }
+                }
             else:
                 attrs[k] = embedded
         elif isinstance(v, list):
             embedded = list(map(lambda l: _expand_included(l, included), v))
             if all(map(lambda i: i[1], embedded)):
-            rels[k] = {
+                rels[k] = {
                     "data": list(map(lambda i: i[0], embedded))
-            }
-        else:
+                }
+            else:
                 attrs[k] = list(map(lambda i: i[0], embedded))
         else:
             attrs[k] = v
@@ -179,11 +188,5 @@ def _expand_included(data, included):
         encoded["type"] = typ
         encoded["id"] = id
         included[(typ, id)] = encoded
-    
-    return { "type": typ, "id": id }, True
 
-    
-    return {
-        "type": obj_type,
-        "id": obj_id
-    }
+    return { "type": typ, "id": id }, True
