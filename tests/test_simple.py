@@ -85,3 +85,15 @@ def test_simple_list():
 def test_invalid():
     with pytest.raises(AttributeError):
         json_api_doc.parse({"a": 1})
+
+
+def test_error():
+    response = {
+        "errors":[{
+            "status":"404",
+            "title":"not found",
+            "detail":"Resource not found"
+        }]
+    }
+    doc = json_api_doc.parse(response)
+    assert doc == response
