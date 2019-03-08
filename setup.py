@@ -39,7 +39,7 @@ setup(
     test_suite='tests',
     tests_require=test_requirements,
     url='https://github.com/noplay/json-api-doc',
-    version='0.4.0',
+    version='0.5.0',
     entry_points={
         'console_scripts': ['jsonapidoc = json_api_doc.__main__:main'],
     }

@@ -2,7 +2,7 @@
 
 __author__ = """Julien Duponchelle"""
 __email__ = 'julien@duponchelle.info'
-__version__ = '0.4.0'
+__version__ = '0.5.0'
 
 
 def parse(content):
