@@ -8,13 +8,13 @@ import pytest
 import json_api_doc
 
 
-def test_encode_object():
+def test_serialize_object():
     data = {
         "$type": "article",
         "id": "1",
         "title": "Article 1"
     }
-    doc = json_api_doc.encode(data)
+    doc = json_api_doc.serialize(data)
     assert doc == {
         "data": {
             "type": "article",
@@ -26,7 +26,7 @@ def test_encode_object():
     }
 
 
-def test_encode_object_list():
+def test_serialize_object_list():
     data = [{
         "$type": "article",
         "id": "1",
@@ -37,7 +37,7 @@ def test_encode_object_list():
         "title": "Article 2"
     }]
 
-    doc = json_api_doc.encode(data)
+    doc = json_api_doc.serialize(data)
     assert doc == {
         "data": [{
             "type": "article",
@@ -55,12 +55,12 @@ def test_encode_object_list():
     }
 
 
-def test_encode_object_without_attributes():
+def test_serialize_object_without_attributes():
     data = {
         "$type": "article",
         "id": "1"
     }
-    doc = json_api_doc.encode(data)
+    doc = json_api_doc.serialize(data)
     assert doc == {
         "data": {
             "type": "article",
@@ -71,10 +71,10 @@ def test_encode_object_without_attributes():
 
 def test_invalid():
     with pytest.raises(AttributeError):
-        json_api_doc.encode({"a": 1})
+        json_api_doc.serialize({"a": 1})
 
 
-def test_encode_object_embedded():
+def test_serialize_object_embedded():
     data = {
         "$type": "article",
         "id": "1",
@@ -85,7 +85,7 @@ def test_encode_object_embedded():
             "name": "Bob"
         }
     }
-    doc = json_api_doc.encode(data)
+    doc = json_api_doc.serialize(data)
     assert doc == {
         "data": {
             "type": "article",
@@ -109,7 +109,7 @@ def test_encode_object_embedded():
     }
 
 
-def test_encode_object_embedded_list():
+def test_serialize_object_embedded_list():
     data = {
         "$type": "article",
         "id": "1",
@@ -124,7 +124,7 @@ def test_encode_object_embedded_list():
             "content": "Second"
         }]
     }
-    doc = json_api_doc.encode(data)
+    doc = json_api_doc.serialize(data)
     assert doc == {
         "data": {
             "type": "article",
@@ -157,7 +157,7 @@ def test_encode_object_embedded_list():
     }
 
 
-def test_encode_object_embedded_json():
+def test_serialize_object_embedded_json():
     data = {
         "$type": "article",
         "id": "1",
@@ -180,7 +180,7 @@ def test_encode_object_embedded_json():
             }
         ]
     }
-    doc = json_api_doc.encode(data)
+    doc = json_api_doc.serialize(data)
     assert doc == {
         "data": {
             "type": "article",
@@ -217,12 +217,12 @@ def test_encode_object_embedded_json():
     }
 
 
-def test_encode_object_embedded_list():
+def test_serialize_object_embedded_list():
     meta = {
         "some": "random",
         "silly": "data"
     }
-    doc = json_api_doc.encode(meta=meta)
+    doc = json_api_doc.serialize(meta=meta)
     assert doc == {
         "meta": {
             "some": "random",
@@ -241,4 +241,4 @@ def test_error_and_data():
                 "status": 200
             }
         }
-        json_api_doc.encode(**doc)
+        json_api_doc.serialize(**doc)

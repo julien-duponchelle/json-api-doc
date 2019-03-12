@@ -5,6 +5,9 @@ __email__ = 'julien@duponchelle.info'
 __version__ = '0.4.0'
 
 
+from .serialization import serialize
+
+
 def parse(content):
     """
     :param content: A JSON API document already
@@ -30,35 +33,6 @@ def parse(content):
     else:
         return None
 
-def encode(data={}, errors={}, meta={}):
-    """
-    :param data: Dict with data to be encoded
-    :returns: JSONAPI encoded object
-    """
-
-    if data and errors:
-        raise AttributeError("""Only 'data' or 'errors' can be present in a 
-                                valid JSON API document""")
-
-    included = {}
-    res = {}
-    if data:
-        if isinstance(data, list):
-            res["data"] = list(map(lambda item: _encode(item, included), data))
-        else:
-            res["data"] = _encode(data, included)
-
-    if included:
-        res["included"] = list(included.values())
-
-    if meta:
-        res["meta"] = meta
-    
-    if errors:
-        res["errors"] = meta
-    
-    return res or { "data": None }
-    
 
 def _resolve(data, included, resolved):
     for key, value in data.items():
@@ -122,74 +96,3 @@ def _flat(obj):
             else:
                 obj[relationship] = (data["type"], data["id"])
     return obj
-
-
-def _encode(data, included):
-    obj_type = data.get("$type", None)
-    if obj_type == None:
-        raise AttributeError("Missing object $type")
-
-    res = _expand(data, included)
-
-    res["type"] = obj_type
-    obj_id = data.get("id", None)
-    if obj_id != None:
-        res["id"] = obj_id
-    
-    return res
-
-
-def _expand(data, included):
-    res = {}
-    attrs = {} 
-    rels = {}
-    for k, v in data.items():
-        if k in ["$type", "id"]:
-            continue
-
-        if isinstance(v, dict):
-            embedded, is_res = _expand_included(v, included)
-            if is_res:
-                rels[k] = {
-                    "data": embedded
-                }
-            else:
-                attrs[k] = embedded
-        elif isinstance(v, list):
-            embedded = list(map(lambda l: _expand_included(l, included), v))
-            if all(map(lambda i: i[1], embedded)):
-                rels[k] = {
-                    "data": list(map(lambda i: i[0], embedded))
-                }
-            else:
-                attrs[k] = list(map(lambda i: i[0], embedded))
-        else:
-            attrs[k] = v
-
-    if len(attrs):
-        res["attributes"] = attrs
-
-    if len(rels):
-        res["relationships"] = rels
-
-    return res
-
-
-def _expand_included(data, included):
-    if not isinstance(data, dict):
-        return data, False
-
-    typ = data.get("$type", None)
-    id = data.get("id", None)
-
-    if typ == None or id == None:
-        # not a sub-resource, return as is
-        return data, False
-
-    if typ != None and id != None and (typ, id) not in included:
-        encoded = _expand(data, included)
-        encoded["type"] = typ
-        encoded["id"] = id
-        included[(typ, id)] = encoded
-
-    return { "type": typ, "id": id }, True
