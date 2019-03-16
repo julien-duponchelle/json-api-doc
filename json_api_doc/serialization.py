@@ -3,7 +3,7 @@
 def serialize(data={}, errors={}, meta={}):
     """
     :param data: Dict with data to be serialized
-    :returns: JSONAPI serialized object
+    :returns: Dict rearranged as valid JSON API document
     """
 
     if data and errors:
