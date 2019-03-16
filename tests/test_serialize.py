@@ -231,6 +231,65 @@ def test_serialize_object_embedded_list():
     }
 
 
+def test_serialize_object_deep():
+    data = {
+        "$type": "article",
+        "id": "1",
+        "title": "Article 1",
+        "author": {
+            "$type": "people",
+            "id": "10",
+            "name": "Bob",
+            "role": {
+                "$type": "role",
+                "id": "100",
+                "name": "Writer",    
+            }
+        }
+    }
+    doc = json_api_doc.serialize(data)
+    assert doc == {
+        "data": {
+            "type": "article",
+            "id": "1",
+            "attributes": {
+                "title": "Article 1"
+            },
+            "relationships": {
+                "author": {
+                    "data": { 
+                        "type": "people",
+                        "id": "10" 
+                    }
+                }
+            }
+        },
+        "included": [
+            {
+                "type": "role",
+                "id": "100",
+                "attributes": {
+                    "name": "Writer",
+                }
+            }, {
+                "type": "people",
+                "id": "10",
+                "attributes": {
+                    "name": "Bob",
+                },
+                "relationships": {
+                    "role": {
+                        "data": { 
+                            "type": "role",
+                            "id": "100" 
+                        }
+                    }
+                }
+            }
+        ]
+    }
+
+
 def test_error_and_data():
     with pytest.raises(AttributeError):
         doc = {
