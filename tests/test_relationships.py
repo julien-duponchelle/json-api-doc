@@ -62,9 +62,8 @@ def test_parse_included():
         "attributes": {
             "first-name": "Bob",
             "last-name": "Doe",
-            }
         }
-    ]
+    }]
     assert json_api_doc._parse_included(data) == {
         ("people", "9"): {
             "type": "people",
@@ -231,9 +230,8 @@ def test_simple_relationships():
             "attributes": {
                 "first-name": "Bob",
                 "last-name": "Doe",
-                }
             }
-        ]
+        }]
     }
     doc = json_api_doc.parse(response)
     assert doc == {

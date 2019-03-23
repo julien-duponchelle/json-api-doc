@@ -10,3 +10,5 @@ from .deserialization import deserialize, _flat, _resolve, _parse_included
 
 # keeps backwards compatibility
 parse = deserialize
+
+__all__ = ['serialize', 'deserialize', '_flat', '_resolve', '_parse_included']

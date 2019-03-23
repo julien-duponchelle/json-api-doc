@@ -58,7 +58,7 @@ def _resolve(data, included, resolved):
                             _resolve(
                                 resolved_item,
                                 included, resolved | set((item, )))
-                            )
+                        )
                 else:
                     l.append(item)
             data[key] = l

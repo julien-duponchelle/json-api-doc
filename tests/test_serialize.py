@@ -95,7 +95,7 @@ def test_serialize_object_embedded():
             },
             "relationships": {
                 "author": {
-                    "data": { "type": "people", "id": "9" }
+                    "data": {"type": "people", "id": "9"}
                 }
             }
         },
@@ -118,7 +118,7 @@ def test_serialize_object_embedded_list():
             "$type": "comment",
             "id": "100",
             "content": "First"
-        },{
+        }, {
             "$type": "comment",
             "id": "101",
             "content": "Second"
@@ -135,8 +135,8 @@ def test_serialize_object_embedded_list():
             "relationships": {
                 "comments": {
                     "data": [
-                        { "type": "comment", "id": "100" },
-                        { "type": "comment", "id": "101" }
+                        {"type": "comment", "id": "100"},
+                        {"type": "comment", "id": "101"}
                     ]
                 }
             }
@@ -147,7 +147,7 @@ def test_serialize_object_embedded_list():
             "attributes": {
                 "content": "First",
             }
-        },{
+        }, {
             "type": "comment",
             "id": "101",
             "attributes": {
@@ -175,7 +175,7 @@ def test_serialize_object_embedded_json():
         "innerObjectArray": [
             {
                 "value": "something"
-            },{
+            }, {
                 "value": "something_else"
             }
         ]
@@ -196,16 +196,16 @@ def test_serialize_object_embedded_json():
                 "innerObjectArray": [
                     {
                         "value": "something"
-                    },{
+                    }, {
                         "value": "something_else"
                     }
                 ]
             },
             "relationships": {
                 "author": {
-                    "data": { 
+                    "data": {
                         "type": "people",
-                        "id": "100" 
+                        "id": "100"
                     }
                 }
             }
@@ -217,7 +217,7 @@ def test_serialize_object_embedded_json():
     }
 
 
-def test_serialize_object_embedded_list():
+def test_serialize_meta():
     meta = {
         "some": "random",
         "silly": "data"
@@ -243,7 +243,7 @@ def test_serialize_object_deep():
             "role": {
                 "$type": "role",
                 "id": "100",
-                "name": "Writer",    
+                "name": "Writer"
             }
         }
     }
@@ -257,9 +257,9 @@ def test_serialize_object_deep():
             },
             "relationships": {
                 "author": {
-                    "data": { 
+                    "data": {
                         "type": "people",
-                        "id": "10" 
+                        "id": "10"
                     }
                 }
             }
@@ -279,9 +279,9 @@ def test_serialize_object_deep():
                 },
                 "relationships": {
                     "role": {
-                        "data": { 
+                        "data": {
                             "type": "role",
-                            "id": "100" 
+                            "id": "100"
                         }
                     }
                 }
