@@ -20,11 +20,13 @@ JSON API Doc
 
 
 
-JSON API to document parser. Available as a command line
-utility and Python 3 module.
+This library provides ability to transform between normalized JSON API
+(http://jsonapi.org/) documents and denormalized Python dictionary object for
+easier manipulation in code.
+Also available as a command line utility and Python 3 module.
 
-This parser will transform JSON API (http://jsonapi.org/) documents
-to object easier to manipulate.
+Deserialization
+~~~~~~~~~~~~~~~
 
 For this JSON API document:
 
@@ -81,6 +83,66 @@ The simplified version will be:
         }
     ]
 
+Serialization
+~~~~~~~~~~~~~
+
+To turn an dict into JSON API specification document the root of your object
+must contain a `$type` key with a value corresponding to the name of
+the object's resource type. Any sub-dict or sub-array of dicts that also
+contain a `$type` key will be considered an included documents and serialized
+accordingly.
+
+.. code-block:: json
+
+    [
+        {
+            "$type": "articles",
+            "id": "1",
+            "title": "JSON API paints my bikeshed!",
+            "body": "The shortest article. Ever.",
+            "created": "2015-05-22T14:56:29.000Z",
+            "updated": "2015-05-22T14:56:28.000Z",
+            "author": {
+                "$type": "people",
+                "id": "42",
+                "name": "John",
+                "age": 80,
+                "gender": "male"
+            }
+        }
+    ]
+
+.. code-block:: json
+
+    {
+      "data": [{
+        "type": "articles",
+        "id": "1",
+        "attributes": {
+          "title": "JSON API paints my bikeshed!",
+          "body": "The shortest article. Ever.",
+          "created": "2015-05-22T14:56:29.000Z",
+          "updated": "2015-05-22T14:56:28.000Z"
+        },
+        "relationships": {
+          "author": {
+            "data": {"id": "42", "type": "people"}
+          }
+        }
+      }],
+      "included": [
+        {
+          "type": "people",
+          "id": "42",
+          "attributes": {
+            "name": "John",
+            "age": 80,
+            "gender": "male"
+          }
+        }
+      ]
+    }
+
 Usage as python module
 ----------------------
 
@@ -97,7 +159,18 @@ Usage as python module
                 }
             }
         }
-        json_api_doc.parse(document)
+        json_api_doc.deserialize(document)
+
+.. code-block:: python
+
+        import json_api_doc
+
+        document =  {
+          '$type': 'article',
+          'id': '1',
+          'name': 'Article 1'
+        }
+        json_api_doc.serialize(document)
 
 Usage as cli
 ------------
@@ -110,6 +183,7 @@ Usage as cli
 Contributors
 -------------
 * Julien Duponchelle (https://github.com/noplay)
+* Antonio Martinović (https://github.com/TopHatCroat)
 
 Licence
 --------

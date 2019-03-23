@@ -3,8 +3,10 @@
 
 def serialize(data={}, errors={}, meta={}):
     """
-    :param data: Dict with data to be serialized
-    :returns: Dict rearranged as valid JSON API document
+    :param data: Dict with data to serialize
+    :param errors: Dict with error data to serialize
+    :param meta: Dict with meta data to serialize
+    :returns: Dict normalized as a valid JSON API document
     """
 
     if data and errors:
