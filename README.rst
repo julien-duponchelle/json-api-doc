@@ -106,6 +106,11 @@ Usage as cli
 
     $ jsonapidoc document.json
 
+
+Contributors
+-------------
+* Julien Duponchelle (https://github.com/noplay)
+
 Licence
 --------
 Free software: Apache Software License 2.0
