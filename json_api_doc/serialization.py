@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 
+from collections import OrderedDict
+
 
 def serialize(data={}, errors={}, meta={}):
     """
@@ -13,7 +15,7 @@ def serialize(data={}, errors={}, meta={}):
         raise AttributeError("""Only 'data' or 'errors' can be present in a
                                 valid JSON API document""")
 
-    included = {}
+    included = OrderedDict()
     res = {}
     if data:
         if isinstance(data, list):
