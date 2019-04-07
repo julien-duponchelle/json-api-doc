@@ -89,10 +89,10 @@ def test_invalid():
 
 def test_error():
     response = {
-        "errors":[{
-            "status":"404",
-            "title":"not found",
-            "detail":"Resource not found"
+        "errors": [{
+            "status": "404",
+            "title": "not found",
+            "detail": "Resource not found"
         }]
     }
     doc = json_api_doc.parse(response)
