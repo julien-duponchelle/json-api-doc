@@ -34,7 +34,7 @@ def _resolve(data, included, resolved):
     for key, value in data.items():
         if isinstance(value, tuple):
             id = {
-                "type": value[0],
+                "$type": value[0],
                 "id": value[1]
             }
             resolved_item = included.get(value, id)
@@ -52,7 +52,7 @@ def _resolve(data, included, resolved):
             for item in value:
                 if isinstance(item, tuple):
                     id = {
-                        "type": item[0],
+                        "$type": item[0],
                         "id": item[1]
                     }
                     resolved_item = included.get(item, id)
@@ -73,13 +73,15 @@ def _resolve(data, included, resolved):
 def _parse_included(included):
     result = {}
     for include in included:
-        result[(include["type"], include["id"])] = _flat(include)
+        result[(include["$type"], include["id"])] = _flat(include)
     return result
 
 
 def _flat(obj):
+    obj['$type'] = obj.pop('type')
     obj.pop("links", None)
     obj.update(obj.pop("attributes", {}))
+
     if "relationships" in obj:
         for relationship, item in obj.pop("relationships").items():
             data = item.get("data")

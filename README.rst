@@ -67,14 +67,14 @@ The simplified version will be:
 
     [
         {
-            "type": "articles",
+            "$type": "articles",
             "id": "1",
             "title": "JSON API paints my bikeshed!",
             "body": "The shortest article. Ever.",
             "created": "2015-05-22T14:56:29.000Z",
             "updated": "2015-05-22T14:56:28.000Z",
             "author": {
-                "type": "people",
+                "$type": "people",
                 "id": "42",
                 "name": "John",
                 "age": 80,
