@@ -1,3 +1,5 @@
+import copy
+
 
 def deserialize(content):
     """
@@ -9,6 +11,9 @@ def deserialize(content):
 
     if "data" not in content:
         raise AttributeError("This is not a JSON API document")
+
+    # be nondestructive with provided content
+    content = copy.deepcopy(content)
 
     if "included" in content:
         included = _parse_included(content["included"])
