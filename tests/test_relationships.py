@@ -245,3 +245,33 @@ def test_simple_relationships():
             "last-name": "Doe"
         }
     }
+
+
+def test_linked_relationship():
+    response = {
+        "data": {
+            "type": "article",
+            "id": "1",
+            "attributes": {
+                "title": "Article 1"
+            },
+            "relationships": {
+                "author": {
+                    "links": {
+                        "related": "/authors/9"
+                    }
+                }
+            }
+        }
+    }
+    doc = json_api_doc.parse(response)
+    assert doc == {
+        "type": "article",
+        "id": "1",
+        "title": "Article 1",
+        "author": {
+            "links": {
+                "related": "/authors/9"
+            }
+        }
+    }
