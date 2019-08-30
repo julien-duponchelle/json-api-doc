@@ -231,6 +231,20 @@ def test_serialize_meta():
     }
 
 
+def test_serialize_errors():
+    errors = {
+        "some": "random",
+        "silly": "data"
+    }
+    doc = json_api_doc.serialize(errors=errors)
+    assert doc == {
+        "errors": {
+            "some": "random",
+            "silly": "data"
+        }
+    }
+
+
 def test_serialize_object_deep():
     data = {
         "$type": "article",

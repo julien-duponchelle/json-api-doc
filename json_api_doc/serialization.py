@@ -31,7 +31,7 @@ def serialize(data={}, errors={}, meta={}):
         res["meta"] = meta
 
     if errors:
-        res["errors"] = meta
+        res["errors"] = errors
 
     return res or {"data": None}
 
