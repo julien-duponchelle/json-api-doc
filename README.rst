@@ -184,6 +184,8 @@ Contributors
 -------------
 * Julien Duponchelle (https://github.com/noplay)
 * Antonio Martinović (https://github.com/TopHatCroat)
+* Jeff Zellman (https://github.com/jzellman)
+* Brenda Deely (https://github.com/brendadeely)
 
 Licence
 --------
