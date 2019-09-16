@@ -245,6 +245,30 @@ def test_serialize_errors():
     }
 
 
+def test_serialize_links():
+    links = {
+        "some": "random",
+        "silly": {
+            "href": "random",
+            "meta": {
+                "silly": "data"
+            }
+        }
+    }
+    doc = json_api_doc.serialize(links=links)
+    assert doc == {
+        "links": {
+            "some": "random",
+            "silly": {
+                "href": "random",
+                "meta": {
+                    "silly": "data"
+                }
+            }
+        }
+    }
+
+
 def test_serialize_object_deep():
     data = {
         "$type": "article",

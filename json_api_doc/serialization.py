@@ -3,7 +3,7 @@
 from collections import OrderedDict
 
 
-def serialize(data={}, errors={}, meta={}):
+def serialize(data={}, errors={}, meta={}, links={}):
     """
     :param data: Dict with data to serialize
     :param errors: Dict with error data to serialize
@@ -32,6 +32,9 @@ def serialize(data={}, errors={}, meta={}):
 
     if errors:
         res["errors"] = errors
+
+    if links:
+        res["links"] = links
 
     return res or {"data": None}
 
