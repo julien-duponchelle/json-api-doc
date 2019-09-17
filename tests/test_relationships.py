@@ -66,7 +66,7 @@ def test_parse_included():
     }]
     assert json_api_doc._parse_included(data) == {
         ("people", "9"): {
-            "type": "people",
+            "$type": "people",
             "id": "9",
             "first-name": "Bob",
             "last-name": "Doe",
@@ -101,7 +101,7 @@ def test_resolve_missing():
     doc = json_api_doc._resolve(data, included, set())
     assert doc == {
         "title": "Article 1",
-        "author": {"type": "people", "id": "9"}
+        "author": {"$type": "people", "id": "9"}
     }
 
 
@@ -145,8 +145,8 @@ def test_resolve_list_missing_items():
     assert doc == {
         "title": "Article 1",
         "authors": [
-            {"id": "9", "type": "people"},
-            {"id": "10", "type": "people"}
+            {"id": "9", "$type": "people"},
+            {"id": "10", "$type": "people"}
         ]
     }
 
@@ -204,7 +204,7 @@ def test_resolve_loop():
             "name": "Jean",
             "father": {
                 "name": "Luc",
-                "son": {"type": "people", "id": "1"}
+                "son": {"$type": "people", "id": "1"}
             }
         }
     }
@@ -235,11 +235,11 @@ def test_simple_relationships():
     }
     doc = json_api_doc.parse(response)
     assert doc == {
-        "type": "article",
+        "$type": "article",
         "id": "1",
         "title": "Article 1",
         "author": {
-            "type": "people",
+            "$type": "people",
             "id": "9",
             "first-name": "Bob",
             "last-name": "Doe"
@@ -266,12 +266,47 @@ def test_linked_relationship():
     }
     doc = json_api_doc.parse(response)
     assert doc == {
-        "type": "article",
+        "$type": "article",
         "id": "1",
         "title": "Article 1",
         "author": {
             "links": {
                 "related": "/authors/9"
             }
+        }
+    }
+
+
+def test_type_relationship():
+    response = {
+        "data": {
+            "type": "article",
+            "id": "1",
+            "attributes": {
+                "title": "Article 1"
+            },
+            "relationships": {
+                "type": {
+                    "data": {"type": "article-type", "id": "9"}
+                }
+            }
+        },
+        "included": [{
+            "type": "article-type",
+            "id": "9",
+            "attributes": {
+                "field": "value"
+            }
+        }]
+    }
+    doc = json_api_doc.parse(response)
+    assert doc == {
+        "$type": "article",
+        "id": "1",
+        "title": "Article 1",
+        "type": {
+            "$type": "article-type",
+            "id": "9",
+            "field": "value"
         }
     }

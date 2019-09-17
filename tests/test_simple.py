@@ -29,7 +29,7 @@ def test_simple_object():
     }
     doc = json_api_doc.parse(response)
     assert doc == {
-        "type": "article",
+        "$type": "article",
         "id": "1",
         "title": "Article 1"
     }
@@ -44,7 +44,7 @@ def test_simple_object_without_attributes():
     }
     doc = json_api_doc.parse(response)
     assert doc == {
-        "type": "article",
+        "$type": "article",
         "id": "1"
     }
 
@@ -71,12 +71,12 @@ def test_simple_list():
     doc = json_api_doc.parse(response)
     assert len(doc) == 2
     assert doc[0] == {
-        "type": "article",
+        "$type": "article",
         "id": "1",
         "title": "Article 1"
     }
     assert doc[1] == {
-        "type": "article",
+        "$type": "article",
         "id": "2",
         "title": "Article 2"
     }
