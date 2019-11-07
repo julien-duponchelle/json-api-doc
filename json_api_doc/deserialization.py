@@ -31,42 +31,27 @@ def deserialize(content):
 
 
 def _resolve(data, included, resolved):
+    if set(data.keys()) == {"type", "id"}:
+        type_id = data["type"], data["id"]
+        resolved_item = included.get(type_id, data)
+        if type_id in resolved:
+            return data
+        else:
+            return _resolve(
+                resolved_item,
+                included,
+                resolved | {type_id}
+            )
     for key, value in data.items():
-        if isinstance(value, tuple):
-            id = {
-                "type": value[0],
-                "id": value[1]
-            }
-            resolved_item = included.get(value, id)
-
-            if value in resolved:
-                data[key] = id
-            else:
-                data[key] = _resolve(
-                    resolved_item,
-                    included,
-                    resolved | set((value, ))
-                )
+        if isinstance(value, dict):
+            data[key] = _resolve(value, included, resolved)
         elif isinstance(value, list):
-            l = []
-            for item in value:
-                if isinstance(item, tuple):
-                    id = {
-                        "type": item[0],
-                        "id": item[1]
-                    }
-                    resolved_item = included.get(item, id)
-                    if item in resolved:
-                        data[key] = id
-                    else:
-                        l.append(
-                            _resolve(
-                                resolved_item,
-                                included, resolved | set((item, )))
-                        )
-                else:
-                    l.append(item)
-            data[key] = l
+            data[key] = [
+                _resolve(item, included, resolved)
+                for item in value
+            ]
+        else:
+            data[key] = value
     return data
 
 
@@ -84,14 +69,10 @@ def _flat(obj):
         for relationship, item in obj.pop("relationships").items():
             data = item.get("data")
             links = item.get("links")
-            if isinstance(data, list):
-                obj[relationship] = [
-                    (i["type"], i["id"]) for i in data
-                ]
-            elif data is None and links:
+            if data is not None:
+                obj[relationship] = data
+            elif links:
                 obj[relationship] = item
-            elif data is None and links is None:
-                obj[relationship] = None
             else:
-                obj[relationship] = (data["type"], data["id"])
+                obj[relationship] = None
     return obj
