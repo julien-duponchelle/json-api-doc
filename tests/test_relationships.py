@@ -14,7 +14,7 @@ def test_flat():
             }
         }
     }
-    assert json_api_doc._flat(data)["author"] == ("people", "9")
+    assert json_api_doc._flat(data)["author"] == {"type": "people", "id": "9"}
 
 
 def test_flat_list():
@@ -34,8 +34,8 @@ def test_flat_list():
         }
     }
     assert json_api_doc._flat(data)["authors"] == [
-        ("people", "9"),
-        ("people", "10")
+        {"type": "people", "id": "9"},
+        {"type": "people", "id": "10"}
     ]
 
 
@@ -82,7 +82,7 @@ def test_resolve():
     }
     data = {
         "title": "Article 1",
-        "author": ("people", "9")
+        "author": {"type": "people", "id": "9"}
     }
     doc = json_api_doc._resolve(data, included, set())
     assert doc == {
@@ -96,7 +96,7 @@ def test_resolve_missing():
     }
     data = {
         "title": "Article 1",
-        "author": ("people", "9")
+        "author": {"type": "people", "id": "9"}
     }
     doc = json_api_doc._resolve(data, included, set())
     assert doc == {
@@ -117,8 +117,8 @@ def test_resolve_list():
     data = {
         "title": "Article 1",
         "authors": [
-            ("people", "9"),
-            ("people", "10"),
+            {"type": "people", "id": "9"},
+            {"type": "people", "id": "10"},
         ]
     }
     doc = json_api_doc._resolve(data, included, set())
@@ -137,8 +137,8 @@ def test_resolve_list_missing_items():
     data = {
         "title": "Article 1",
         "authors": [
-            ("people", "9"),
-            ("people", "10"),
+            {"type": "people", "id": "9"},
+            {"type": "people", "id": "10"},
         ]
     }
     doc = json_api_doc._resolve(data, included, set())
@@ -155,11 +155,11 @@ def test_resolve_nested():
     included = {
         ("people", "9"): {
             "name": "Jean",
-            "address": ("location", "2"),
+            "address": {"type": "location", "id": "2"},
         },
         ("location", "2"): {
             "street": "boulevard magenta",
-            "city": ("city", "3")
+            "city": {"type": "city", "id": "3"}
         },
         ("city", "3"): {
             "name": "Paris"
@@ -167,7 +167,7 @@ def test_resolve_nested():
     }
     data = {
         "title": "Article 1",
-        "author": ("people", "9")
+        "author": {"type": "people", "id": "9"}
     }
     doc = json_api_doc._resolve(data, included, set())
     assert doc == {
@@ -186,16 +186,16 @@ def test_resolve_loop():
     included = {
         ("people", "1"): {
             "name": "Jean",
-            "father": ("people", "2"),
+            "father": {"type": "people", "id": "2"},
         },
         ("people", "2"): {
             "name": "Luc",
-            "son": ("people", "1"),
+            "son": {"type": "people", "id": "1"},
         },
     }
     data = {
         "title": "Article 1",
-        "author": ("people", "1")
+        "author": {"type": "people", "id": "1"}
     }
     doc = json_api_doc._resolve(data, included, set())
     assert doc == {

@@ -35,3 +35,39 @@ def test_deserialize_is_non_destructive():
     response = json.loads(raw_response)
     json_api_doc.deserialize(response)
     assert response == json.loads(raw_response)
+
+
+def test_first_level_data_in_included():
+    response = {
+        "data": {
+            "type": "article",
+            "id": "1"
+        },
+        "included": [
+            {
+                "type": "article",
+                "id": "1",
+                "attributes": {
+                    "title": "Article 1"
+                },
+                "relationships": {
+                    "author": {
+                        "links": {
+                            "related": "/authors/9"
+                        }
+                    }
+                }
+            }
+        ]
+    }
+    doc = json_api_doc.deserialize(response)
+    assert doc == {
+        "type": "article",
+        "id": "1",
+        "title": "Article 1",
+        "author": {
+            "links": {
+                "related": "/authors/9"
+            }
+        }
+    }
