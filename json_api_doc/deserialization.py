@@ -31,17 +31,23 @@ def deserialize(content):
 
 
 def _resolve(data, included, resolved):
-    if set(data.keys()) == {"type", "id"}:
+    if not isinstance(data, dict):
+        return data
+    keys = data.keys()
+    if keys == {"type", "id"} or keys == {"type", "id", "meta"}:
         type_id = data["type"], data["id"]
+        meta = data.get("meta")
         resolved_item = included.get(type_id, data)
-        if type_id in resolved:
-            return data
-        else:
-            return _resolve(
+        if type_id not in resolved:
+            data = _resolve(
                 resolved_item,
                 included,
                 resolved | {type_id}
             )
+        if meta is not None:
+            data = data.copy()
+            data.update(meta=meta)
+        return data
     for key, value in data.items():
         if isinstance(value, dict):
             data[key] = _resolve(value, included, resolved)

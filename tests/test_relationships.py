@@ -91,6 +91,23 @@ def test_resolve():
     }
 
 
+def test_resolve_with_meta():
+    included = {
+        ("people", "9"): {
+            "name": "Jean"
+        }
+    }
+    data = {
+        "title": "Article 1",
+        "author": {"type": "people", "id": "9", "meta": {"index": 3}}
+    }
+    doc = json_api_doc._resolve(data, included, set())
+    assert doc == {
+        "title": "Article 1",
+        "author": {"name": "Jean", "meta": {"index": 3}}
+    }
+
+
 def test_resolve_missing():
     included = {
     }
@@ -127,6 +144,32 @@ def test_resolve_list():
         "authors": [
             {"name": "Jean"},
             {"name": "Luc"},
+        ]
+    }
+
+
+def test_resolve_list_with_meta():
+    included = {
+        ("people", "9"): {
+            "name": "Jean"
+        },
+        ("people", "10"): {
+            "name": "Luc"
+        }
+    }
+    data = {
+        "title": "Article 1",
+        "authors": [
+            {"type": "people", "id": "9", "meta": {"index": 3}},
+            {"type": "people", "id": "10", "meta": {"index": 18}},
+        ]
+    }
+    doc = json_api_doc._resolve(data, included, set())
+    assert doc == {
+        "title": "Article 1",
+        "authors": [
+            {"name": "Jean", "meta": {"index": 3}},
+            {"name": "Luc", "meta": {"index": 18}},
         ]
     }
 
@@ -243,6 +286,44 @@ def test_simple_relationships():
             "id": "9",
             "first-name": "Bob",
             "last-name": "Doe"
+        }
+    }
+
+
+def test_simple_relationships_with_meta():
+    response = {
+        "data": {
+            "type": "article",
+            "id": "1",
+            "attributes": {
+                "title": "Article 1"
+            },
+            "relationships": {
+                "author": {
+                    "data": {"type": "people", "id": "9", "meta": {"index": 3}}
+                }
+            }
+        },
+        "included": [{
+            "type": "people",
+            "id": "9",
+            "attributes": {
+                "first-name": "Bob",
+                "last-name": "Doe",
+            }
+        }]
+    }
+    doc = json_api_doc.parse(response)
+    assert doc == {
+        "type": "article",
+        "id": "1",
+        "title": "Article 1",
+        "author": {
+            "type": "people",
+            "id": "9",
+            "first-name": "Bob",
+            "last-name": "Doe",
+            "meta": {"index": 3}
         }
     }
 
