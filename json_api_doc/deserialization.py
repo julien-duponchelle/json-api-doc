@@ -30,7 +30,7 @@ def deserialize(content):
         return None
 
 
-def _resolve(data, included, resolved):
+def _resolve(data, included, resolved, deep=True):
     if not isinstance(data, dict):
         return data
     keys = data.keys()
@@ -52,10 +52,11 @@ def _resolve(data, included, resolved):
         if isinstance(value, dict):
             data[key] = _resolve(value, included, resolved)
         elif isinstance(value, list):
-            data[key] = [
-                _resolve(item, included, resolved)
-                for item in value
-            ]
+            if deep:
+                data[key] = [
+                    _resolve(item, included, resolved, False)
+                    for item in value
+                ]
         else:
             data[key] = value
     return data
