@@ -54,6 +54,12 @@ def test_serialize_object_list():
         }]
     }
 
+def test_serialize_empty_list():
+    doc = json_api_doc.serialize([])
+    assert doc == {
+        "data": []
+    }
+
 
 def test_serialize_object_without_attributes():
     data = {
