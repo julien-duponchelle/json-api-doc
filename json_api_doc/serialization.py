@@ -23,6 +23,8 @@ def serialize(data={}, errors={}, meta={}, links={}):
                 map(lambda item: _serialize(item, included), data))
         else:
             res["data"] = _serialize(data, included)
+    elif isinstance(data, list):
+        res["data"] = []
 
     if included:
         res["included"] = list(included.values())
