@@ -72,6 +72,7 @@ def test_first_level_data_in_included():
         }
     }
 
+
 def test_can_handle_deep_recursive_relationships():
     response = {
         "data": {
@@ -108,7 +109,7 @@ def test_can_handle_deep_recursive_relationships():
                             "meta": {"count": 1},
                             "data": [{"type": "AddressInfo", "id": "1"}]
                         }
-                    }
+                }
             }, {
                 "type": "AddressInfo",
                 "id": "1",
@@ -161,3 +162,156 @@ def test_can_handle_deep_recursive_relationships():
     doc = json_api_doc.deserialize(response)
     assert bool(doc["drivers"][0]["entity"]["addresses"][0]["info"]) is True
     assert bool(doc["losses"][0]["address"]) is True
+
+
+def test_resolves_deeply_without_infinite_recursion():
+    response = {
+        "data": [
+            {
+                "id": "O-546755D4",
+                "relationships": {
+                    "route": {
+                        "data": {
+                            "id": "Orange",
+                            "type": "route"
+                        }
+                    },
+                    "trip": {
+                        "data": {
+                            "id": "45616458",
+                            "type": "trip"
+                        }
+                    }
+                },
+                "type": "vehicle"
+            },
+            {
+                "id": "O-546751D5",
+                "relationships": {
+                    "route": {
+                        "data": {
+                            "id": "Orange",
+                            "type": "route"
+                        }
+                    },
+                    "trip": {
+                        "data": {
+                            "id": "45616586",
+                            "type": "trip"
+                        }
+                    }
+                },
+                "type": "vehicle"
+            },
+            {
+                "id": "O-54675162",
+                "relationships": {
+                    "route": {
+                        "data": {
+                            "id": "Orange",
+                            "type": "route"
+                        }
+                    },
+                    "trip": {
+                        "data": {
+                            "id": "45616587",
+                            "type": "trip"
+                        }
+                    }
+                },
+                "type": "vehicle"
+            }
+        ],
+        "included": [
+            {
+                "id": "45616586",
+                "relationships": {
+                    "route": {
+                        "data": {
+                            "id": "Orange",
+                            "type": "route"
+                        }
+                    },
+                    "route_pattern": {
+                        "data": {
+                            "id": "Orange-3-1",
+                            "type": "route_pattern"
+                        }
+                    }
+                },
+                "type": "trip"
+            },
+            {
+                "id": "Orange-3-1",
+                "relationships": {
+                    "token_trip": {
+                        "data": {
+                            "id": "45616458",
+                            "type": "trip"
+                        }
+                    },
+                    "route": {
+                        "data": {
+                            "id": "Orange",
+                            "type": "route"
+                        }
+                    }
+                },
+                "type": "route_pattern"
+            },
+            {
+                "id": "45616458",
+                "relationships": {
+                    "route": {
+                        "data": {
+                            "id": "Orange",
+                            "type": "route"
+                        }
+                    },
+                    "route_pattern": {
+                        "data": {
+                            "id": "Orange-3-1",
+                            "type": "route_pattern"
+                        }
+                    }
+                },
+                "type": "trip"
+            },
+            {
+                "id": "45616587",
+                "relationships": {
+                    "route": {
+                        "data": {
+                            "id": "Orange",
+                            "type": "route"
+                        }
+                    },
+                    "route_pattern": {
+                        "data": {
+                            "id": "Orange-3-1",
+                            "type": "route_pattern"
+                        }
+                    }
+                },
+                "type": "trip"
+            }
+        ]
+    }
+
+    doc = json_api_doc.parse(response)
+    trip_id = {'id': '45616458', 'type': 'trip'}
+    route_id = {'id': 'Orange',
+                'type': 'route'}
+    route_pattern_id = {'id': 'Orange-3-1',
+                        'type': 'route_pattern'}
+
+    trip0 = doc[0]['trip']
+    trip1 = doc[1]['trip']
+    assert bool(trip0 != trip_id)
+    assert bool(trip0['route_pattern']['route'] == route_id)
+    assert bool(trip0['route_pattern']['token_trip'] == trip_id)
+
+    assert bool(trip1['route_pattern'] != route_pattern_id)
+    assert bool(trip1['route_pattern']['route'] == route_id)
+    assert bool(trip1['route_pattern']['token_trip']['route'] == route_id)
+    assert bool(trip1['route_pattern']['token_trip']['route_pattern'] == route_pattern_id)
