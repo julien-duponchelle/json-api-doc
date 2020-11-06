@@ -38,6 +38,7 @@ def _resolve(data, included, resolved, deep=True):
         type_id = data["type"], data["id"]
         meta = data.get("meta")
         resolved_item = included.get(type_id, data)
+        resolved_item = resolved_item.copy()
         if type_id not in resolved:
             data = _resolve(
                 resolved_item,
