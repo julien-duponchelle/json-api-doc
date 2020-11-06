@@ -2,7 +2,7 @@
 
 __author__ = """Julien Duponchelle"""
 __email__ = 'julien@duponchelle.info'
-__version__ = '0.14.0'
+__version__ = '0.15.0'
 
 
 from .serialization import serialize
